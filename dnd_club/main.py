@@ -5,11 +5,13 @@ from aiohttp import web
 
 from dnd_club.helpers import setup_logging
 from dnd_club.routes import routes
+from dnd_club.middlewares import suppress_exceptions
 
 
 def init_app(loop=None):
     app = web.Application(
         middlewares=[
+            suppress_exceptions
         ],
         loop=loop
     )
