@@ -1,5 +1,19 @@
+import hashlib
 import logging
 import sys
+
+from aiohttp.web import json_response
+
+
+def api_response(status, data=None, code=200):
+    return json_response({
+        'status': status,
+        'data': data,
+    }, status=code)
+
+
+def hash_pass(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
 
 def setup_logging(verbose=True, silent=False):

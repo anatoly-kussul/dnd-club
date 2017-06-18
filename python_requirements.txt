@@ -1,5 +1,7 @@
 aiohttp==2.1.0
 async-timeout==1.2.1
 chardet==3.0.4
+motor==1.1
 multidict==2.1.6
+pymongo==3.4.0
 yarl==0.10.3

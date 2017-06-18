@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  mongo:
+    image: mongo:3.2
+
+  dnd-club:
+    image: dnd-club-env:latest
+    container_name: dnd-club
+    command: python -m dnd_club.main
+    environment:
+      - RUN_ARGS=${ARGS}
+    volumes:
+      - ../:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo

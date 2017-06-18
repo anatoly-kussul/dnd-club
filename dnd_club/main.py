@@ -2,19 +2,44 @@ import asyncio
 import logging
 
 from aiohttp import web
+from motor import motor_asyncio
+from pymongo.errors import DuplicateKeyError
 
-from dnd_club.helpers import setup_logging
+import settings
+from dnd_club.helpers import setup_logging, hash_pass
 from dnd_club.routes import routes
-from dnd_club.middlewares import suppress_exceptions
+from dnd_club.middlewares import suppress_exceptions, auth
+
+
+async def init_db():
+    mongo_client = motor_asyncio.AsyncIOMotorClient(settings.MONGO_HOST, settings.MONGO_PORT)
+    db = mongo_client[settings.MONGO_DB]
+    await db.users.create_index('username', unique=True)
+    await db.users.create_index('email', unique=True)
+    admin = {
+        'username': 'admin',
+        'password': hash_pass('admin'),
+        'email': 'admin@dnd-club'
+    }
+    try:
+        await db.users.insert_one(admin)
+    except DuplicateKeyError:
+        pass
+    return db
 
 
 def init_app(loop=None):
     app = web.Application(
         middlewares=[
-            suppress_exceptions
+            suppress_exceptions,
+            auth,
         ],
         loop=loop
     )
+
+    app['db'] = loop.run_until_complete(init_db())
+    app['session_storage'] = {}
+
     for route in routes:
         app.router.add_route(route[0], route[1], route[2], name=route[3])
     return app
@@ -56,7 +81,7 @@ def main():
     loop = asyncio.get_event_loop()
     app = init_app(loop=loop)
     try:
-        run_app(app, port=8080)
+        run_app(app, port=settings.PORT)
     finally:
         logging.info('Stopped.')
 

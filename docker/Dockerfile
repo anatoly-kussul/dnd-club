@@ -9,3 +9,5 @@ RUN rm python_requirements.txt
 # Folder to mount your app code
 RUN mkdir /app
 WORKDIR /app
+
+STOPSIGNAL SIGINT
