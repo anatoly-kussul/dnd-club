@@ -29,9 +29,10 @@ async def auth(app, handler):
 
         if login_required(request.path):
             token = request.cookies.get('token')
+            logging.critical(token)
             if token not in app['session_storage']:
                 raise web.HTTPForbidden(reason='Not logged in')
-            request['user'] = app['session_storage'][token]
+            request.user = app['session_storage'][token]
         return await handler(request)
 
     return middleware

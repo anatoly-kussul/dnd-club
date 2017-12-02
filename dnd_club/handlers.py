@@ -6,7 +6,7 @@ from dnd_club.helpers import hash_pass, api_response
 
 
 async def hello_world(request):
-    user = request['user']
+    user = request.user
     return api_response(True, 'Hello {}!'.format(user['username']))
 
 
@@ -23,6 +23,15 @@ async def login(request):
     app['session_storage'][token] = user
     response = api_response(True, token)
     response.set_cookie('token', token)
+    return response
+
+
+async def logout(request):
+    app = request.app
+    token = request.cookies.get('token')
+    app['session_storage'].pop(token, None)
+    response = api_response(True)
+    response.set_cookie('token', None)
     return response
 
 
