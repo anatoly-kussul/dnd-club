@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import json
 
 from aiohttp import web
 from motor import motor_asyncio
@@ -16,6 +17,10 @@ async def init_db():
     db = mongo_client[settings.MONGO_DB]
     await db.users.create_index('username', unique=True)
     await db.users.create_index('email', unique=True)
+    # for _class in ['wizard', 'cleric']:
+    #     with open('{}.json'.format(_class)) as f:
+    #         data = json.load(f)
+    #         await db['{}_spells'.format(_class)].insert_many(data)
     admin = {
         'username': 'admin',
         'password': hash_pass('admin'),

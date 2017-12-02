@@ -3,6 +3,7 @@ from dnd_club.handlers import (
     login,
     register,
     logout,
+    get_class_spells,
 )
 
 routes = [
@@ -10,4 +11,5 @@ routes = [
     ('POST', '/login', login, 'login'),
     ('POST', '/register', register, 'register'),
     ('POST', '/logout', logout, 'logout'),
+    ('GET', '/spells', get_class_spells, 'get_class_spells'),
 ]

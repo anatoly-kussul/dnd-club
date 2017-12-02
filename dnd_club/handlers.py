@@ -57,3 +57,16 @@ async def register(request):
             return api_response(False, 'This email is already in use')
         else:
             return api_response(False, '{!r}'.format(e))
+
+
+async def get_class_spells(request):
+    app = request.app
+    db = app['db']
+    params = request.GET
+    _class = params.get('class', '')
+    spells = [spell async for spell in db['{}_spells'.format(_class)].find()]
+    for spell in spells:
+        spell['_id'] = str(spell['_id'])
+    import logging
+    logging.critical(spells)
+    return api_response(True, spells)

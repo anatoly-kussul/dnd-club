@@ -6,10 +6,13 @@ from aiohttp.web import json_response
 
 
 def api_response(status, data=None, code=200):
-    return json_response({
-        'status': status,
-        'data': data,
-    }, status=code)
+    return json_response(
+        {
+            'status': status,
+            'data': data,
+        },
+        status=code,
+    )
 
 
 def hash_pass(password):
