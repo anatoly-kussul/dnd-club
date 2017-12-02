@@ -32,7 +32,7 @@ async def logout(request):
     token = request.cookies.get('token')
     app['session_storage'].pop(token, None)
     response = api_response(True)
-    response.set_cookie('token', None)
+    response.del_cookie('token')
     return response
 
 

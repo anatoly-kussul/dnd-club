@@ -8,7 +8,7 @@ from pymongo.errors import DuplicateKeyError
 import settings
 from dnd_club.helpers import setup_logging, hash_pass
 from dnd_club.routes import routes
-from dnd_club.middlewares import suppress_exceptions, auth
+from dnd_club.middlewares import suppress_exceptions, auth, cors_factory
 
 
 async def init_db():
@@ -37,6 +37,7 @@ def init_app(loop=None):
         middlewares=[
             suppress_exceptions,
             auth,
+            cors_factory,
         ],
         loop=loop
     )
