@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import json
 
 from aiohttp import web
 from motor import motor_asyncio

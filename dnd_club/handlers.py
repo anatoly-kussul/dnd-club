@@ -1,5 +1,6 @@
 import uuid
 
+import bson
 from pymongo.errors import DuplicateKeyError
 
 from dnd_club.helpers import hash_pass, api_response
@@ -64,9 +65,55 @@ async def get_class_spells(request):
     db = app['db']
     params = request.GET
     _class = params.get('class', '')
-    spells = [spell async for spell in db['{}_spells'.format(_class)].find()]
+    spells = await db['{}_spells'.format(_class)].find().to_list(None)
     for spell in spells:
         spell['_id'] = str(spell['_id'])
-    import logging
-    logging.critical(spells)
     return api_response(True, spells)
+
+
+async def add_favorite(request):
+    app = request.app
+    db = app['db']
+    params = await request.post()
+    str_id = params.get('id')
+    _class = params.get('class')
+    _id = bson.ObjectId(str_id)
+    user = request.user
+    if _id not in user.get('{}_favorite_spells'.format(_class), []):
+        user.setdefault('{}_favorite_spells'.format(_class), []).append(_id)
+    await db.users.find_one_and_update(
+        {'_id': user['_id']},
+        {'$set': {'{}_favorite_spells'.format(_class): user['{}_favorite_spells'.format(_class)]}},
+    )
+    return api_response(True, str_id)
+
+
+async def remove_favorite(request):
+    app = request.app
+    db = app['db']
+    params = await request.post()
+    str_id = params.get('id')
+    _class = params.get('class')
+    _id = bson.ObjectId(str_id)
+    user = request.user
+    if _id in user.get('{}_favorite_spells'.format(_class), []):
+        user['{}_favorite_spells'.format(_class)].remove(_id)
+    await db.users.find_one_and_update(
+        {'_id': user['_id']},
+        {'$set': {'{}_favorite_spells'.format(_class): user['{}_favorite_spells'.format(_class)]}},
+    )
+    return api_response(True, str_id)
+
+
+async def get_favorites(request):
+    app = request.app
+    db = app['db']
+    user = request.user
+    params = await request.post()
+    _class = params.get('class')
+    fav = await db['{}_spells'.format(_class)].find(
+        {'_id': {'$in': [bson.ObjectId(_id) for _id in user.get('{}_favorite_spells'.format(_class), [])]}}
+    ).to_list(None)
+    for f in fav:
+        f['_id'] = str(f['_id'])
+    return api_response(True, fav)
