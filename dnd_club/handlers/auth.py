@@ -45,9 +45,8 @@ async def register(request):
         'username': username,
         'password': hash_pass(password),
         'email': email,
-        'collections': {
-            'favorites': [],
-        },
+        'collections': {},
+        'favorites': [],
     }
     try:
         await db.users.insert_one(user)  # TODO: validate data

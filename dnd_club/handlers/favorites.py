@@ -12,7 +12,7 @@ async def add_favorite(request):
 
     str_id = params.get('id')
     _id = bson.ObjectId(str_id)
-    favorites = user['collections']['favorites']
+    favorites = user['favorites']
     if _id not in favorites:
         favorites.append(_id)
     else:
@@ -32,7 +32,7 @@ async def remove_favorite(request):
 
     str_id = params.get('id')
     _id = bson.ObjectId(str_id)
-    favorites = user['collections']['favorites']
+    favorites = user['favorites']
     if _id in favorites:
         favorites.remove(_id)
     else:
@@ -50,6 +50,6 @@ async def get_favorites(request):
     user = request.user
 
     fav = await db.spells.find(
-        {'_id': {'$in': [bson.ObjectId(_id) for _id in user['collections']['favorites']]}}
+        {'_id': {'$in': user['favorites']}}
     ).to_list(None)
     return api_response(fav)

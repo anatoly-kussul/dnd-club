@@ -37,9 +37,8 @@ async def init_db():
         'username': 'admin',
         'password': hash_pass('admin'),
         'email': 'admin@dnd-club',
-        'collections': {
-            'favorites': [],
-        },
+        'collections': {},
+        'favorites': [],
     }
     try:
         await db.users.insert_one(admin)
