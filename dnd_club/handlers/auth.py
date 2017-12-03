@@ -11,9 +11,9 @@ async def login(request):
     db = app['db']
 
     params = await request.post()
-    username = params.get('username')
+    email = params.get('email')
     password = params.get('password')
-    user = await db.users.find_one({'username': username, 'password': hash_pass(password)})
+    user = await db.users.find_one({'email': email, 'password': hash_pass(password)})
     if not user:
         raise ResponseError('Wrong username or password')
     token = str(uuid.uuid4())

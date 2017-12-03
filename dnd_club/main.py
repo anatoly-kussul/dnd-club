@@ -17,7 +17,6 @@ async def init_db():
     # await mongo_client.drop_database(settings.MONGO_DB)
 
     db = mongo_client[settings.MONGO_DB]
-    await db.users.create_index('username', unique=True)
     await db.users.create_index('email', unique=True)
     await db.spells.create_index('name', unique=True)
 
