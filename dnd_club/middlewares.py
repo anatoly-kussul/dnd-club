@@ -39,10 +39,10 @@ async def suppress_exceptions(app, handler):
         try:
             return await handler(request)
         except web.HTTPClientError as e:
-            return api_response(False, e.reason, code=e.status_code)
+            return api_response(e.reason, status=False, code=e.status_code)
         except Exception as e:
             logging.critical('Uncaught exception {!r} in \'{}\' handler'.format(e, handler.__name__), exc_info=True)
-            return api_response(False, 'Internal server error', code=500)
+            return api_response('Internal server error', status=False, code=500)
 
     return middleware
 

@@ -5,7 +5,7 @@ import logging.config
 from aiohttp.web import json_response
 
 
-def api_response(status, data=None, code=200):
+def api_response(data=None, status=True, code=200):
     return json_response(
         {
             'status': status,

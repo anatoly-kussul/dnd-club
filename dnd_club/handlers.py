@@ -4,11 +4,12 @@ import bson
 from pymongo.errors import DuplicateKeyError
 
 from dnd_club.helpers import hash_pass, api_response
+from dnd_club.errors import ResponseError
 
 
 async def hello_world(request):
     user = request.user
-    return api_response(True, 'Hello {}!'.format(user['username']))
+    return api_response('Hello {}!'.format(user['username']))
 
 
 async def login(request):
@@ -19,10 +20,10 @@ async def login(request):
     db = app['db']
     user = await db.users.find_one({'username': username, 'password': hash_pass(password)})
     if not user:
-        return api_response(False, 'Wrong username or password')
+        raise ResponseError('Wrong username or password')
     token = str(uuid.uuid4())
     app['session_storage'][token] = user
-    response = api_response(True, token)
+    response = api_response(token)
     response.set_cookie('token', token)
     return response
 
@@ -53,11 +54,11 @@ async def register(request):
         return api_response(True)
     except DuplicateKeyError as e:
         if username in repr(e):
-            return api_response(False, 'Username already taken')
+            raise ResponseError('Username already taken')
         elif email in repr(e):
-            return api_response(False, 'This email is already in use')
+            raise ResponseError('This email is already in use')
         else:
-            return api_response(False, '{!r}'.format(e))
+            raise
 
 
 async def get_class_spells(request):
@@ -68,7 +69,7 @@ async def get_class_spells(request):
     spells = await db['{}_spells'.format(_class)].find().to_list(None)
     for spell in spells:
         spell['_id'] = str(spell['_id'])
-    return api_response(True, spells)
+    return api_response(spells)
 
 
 async def add_favorite(request):
@@ -85,7 +86,7 @@ async def add_favorite(request):
         {'_id': user['_id']},
         {'$set': {'{}_favorite_spells'.format(_class): user['{}_favorite_spells'.format(_class)]}},
     )
-    return api_response(True, str_id)
+    return api_response(str_id)
 
 
 async def remove_favorite(request):
@@ -102,7 +103,7 @@ async def remove_favorite(request):
         {'_id': user['_id']},
         {'$set': {'{}_favorite_spells'.format(_class): user['{}_favorite_spells'.format(_class)]}},
     )
-    return api_response(True, str_id)
+    return api_response(str_id)
 
 
 async def get_favorites(request):
@@ -116,4 +117,4 @@ async def get_favorites(request):
     ).to_list(None)
     for f in fav:
         f['_id'] = str(f['_id'])
-    return api_response(True, fav)
+    return api_response(fav)

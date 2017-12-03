@@ -25,7 +25,7 @@ async def init_db():
     #     with open('{}.json'.format(_class)) as f:
     #         data = json.load(f)
     #         for spell in data:
-    #             spell['description'] = eval(spell['description']).decode()
+    #             spell['description'] = eval(spell['description']).decode().strip()
     #         await db['{}_spells'.format(_class)].insert_many(data)
 
     admin = {
