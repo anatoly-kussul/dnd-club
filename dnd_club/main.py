@@ -13,13 +13,21 @@ from dnd_club.middlewares import suppress_exceptions, auth, cors_factory
 
 async def init_db():
     mongo_client = motor_asyncio.AsyncIOMotorClient(settings.MONGO_HOST, settings.MONGO_PORT)
+
+    # await mongo_client.drop_database(settings.MONGO_DB)
+
     db = mongo_client[settings.MONGO_DB]
     await db.users.create_index('username', unique=True)
     await db.users.create_index('email', unique=True)
+
+    # import json
     # for _class in ['wizard', 'cleric']:
     #     with open('{}.json'.format(_class)) as f:
     #         data = json.load(f)
+    #         for spell in data:
+    #             spell['description'] = eval(spell['description']).decode()
     #         await db['{}_spells'.format(_class)].insert_many(data)
+
     admin = {
         'username': 'admin',
         'password': hash_pass('admin'),
