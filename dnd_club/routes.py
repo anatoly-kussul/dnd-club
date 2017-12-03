@@ -12,17 +12,26 @@ from dnd_club.handlers import (
     add_to_collection,
     remove_from_collection,
     get_collection,
+    change_password,
 )
 
 routes = [
+    # auth
     ('POST', '/login', login, 'login'),
     ('POST', '/register', register, 'register'),
     ('POST', '/logout', logout, 'logout'),
+    ('POST', '/change_pass', change_password, 'change_pass'),
+    ('GET', '/get_user_data', get_user_data, 'get_user_data'),
+
+    # spells
     ('GET', '/spells', get_class_spells, 'get_class_spells'),
+
+    # favorites
     ('POST', '/add_fav', add_favorite, 'add_fav'),
     ('GET', '/get_fav', get_favorites, 'get_fav'),
     ('POST', '/rem_fav', remove_favorite, 'rem_fav'),
-    ('GET', '/get_user_data', get_user_data, 'get_user_data'),
+
+    # collections
     ('POST', '/create_collection', create_collection, 'create_collection'),
     ('POST', '/delete_collection', delete_collection, 'delete_collection'),
     ('POST', '/add_to_collection', add_to_collection, 'add_to_collection'),

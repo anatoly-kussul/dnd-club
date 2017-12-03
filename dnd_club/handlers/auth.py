@@ -69,3 +69,24 @@ async def get_user_data(request):
         'collections': list(user['collections'].keys()),
     }
     return api_response(user_dict)
+
+
+@login_required
+async def change_password(request):
+    db = request.app['db']
+    user = request.user
+    params = await request.post()
+
+    old_password = params.get('old_password')
+    new_password = params.get('new_password')
+
+    if hash_pass(old_password) != user['password']:
+        raise ResponseError('Wrong password')
+
+    user['password'] = hash_pass(new_password)
+    await db.users.find_one_and_update(
+        {'_id': user['_id']},
+        {'$set': {'password': user['password']}}
+    )
+
+    return api_response(True)
