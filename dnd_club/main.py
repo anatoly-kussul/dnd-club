@@ -19,19 +19,27 @@ async def init_db():
     db = mongo_client[settings.MONGO_DB]
     await db.users.create_index('username', unique=True)
     await db.users.create_index('email', unique=True)
+    await db.spells.create_index('name', unique=True)
 
     # import json
+    # spells = {}
     # for _class in ['wizard', 'cleric']:
     #     with open('{}.json'.format(_class)) as f:
     #         data = json.load(f)
     #         for spell in data:
     #             spell['description'] = eval(spell['description']).decode().strip()
-    #         await db['{}_spells'.format(_class)].insert_many(data)
+    #             spell['lvl'] = {_class: int(spell['lvl'])}
+    #             saved_spell = spells.setdefault(spell['name'], spell)
+    #             saved_spell['lvl'].update(spell['lvl'])
+    # await db.spells.insert_many(spells.values())
 
     admin = {
         'username': 'admin',
         'password': hash_pass('admin'),
-        'email': 'admin@dnd-club'
+        'email': 'admin@dnd-club',
+        'collections': {
+            'favorites': [],
+        },
     }
     try:
         await db.users.insert_one(admin)

@@ -16,6 +16,6 @@ routes = [
     ('POST', '/logout', logout, 'logout'),
     ('GET', '/spells', get_class_spells, 'get_class_spells'),
     ('POST', '/add_fav', add_favorite, 'add_fav'),
-    ('POST', '/get_fav', get_favorites, 'get_fav'),
+    ('GET', '/get_fav', get_favorites, 'get_fav'),
     ('POST', '/rem_fav', remove_favorite, 'rem_fav'),
 ]

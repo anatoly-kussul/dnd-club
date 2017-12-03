@@ -50,6 +50,9 @@ async def register(request):
         'username': username,
         'password': hash_pass(password),
         'email': email,
+        'collections': {
+            'favorites': [],
+        },
     }
     try:
         await db.users.insert_one(user)  # TODO: validate data
@@ -68,7 +71,7 @@ async def get_class_spells(request):
     db = app['db']
     params = request.GET
     _class = params.get('class', '')
-    spells = await db['{}_spells'.format(_class)].find().to_list(None)
+    spells = await db.spells.find({'lvl.{}'.format(_class): {'$exists': True}}).to_list(None)
     for spell in spells:
         spell['_id'] = str(spell['_id'])
     return api_response(spells)
@@ -80,14 +83,16 @@ async def add_favorite(request):
     db = app['db']
     params = await request.post()
     str_id = params.get('id')
-    _class = params.get('class')
     _id = bson.ObjectId(str_id)
     user = request.user
-    if _id not in user.get('{}_favorite_spells'.format(_class), []):
-        user.setdefault('{}_favorite_spells'.format(_class), []).append(_id)
+    favorites = user['collections']['favorites']
+    if _id not in favorites:
+        favorites.append(_id)
+    else:
+        raise ResponseError('Already in favorites')
     await db.users.find_one_and_update(
         {'_id': user['_id']},
-        {'$set': {'{}_favorite_spells'.format(_class): user['{}_favorite_spells'.format(_class)]}},
+        {'$set': {'collections.favorites': favorites}},
     )
     return api_response(str_id)
 
@@ -98,14 +103,16 @@ async def remove_favorite(request):
     db = app['db']
     params = await request.post()
     str_id = params.get('id')
-    _class = params.get('class')
     _id = bson.ObjectId(str_id)
     user = request.user
-    if _id in user.get('{}_favorite_spells'.format(_class), []):
-        user['{}_favorite_spells'.format(_class)].remove(_id)
+    favorites = user['collections']['favorites']
+    if _id in favorites:
+        favorites.remove(_id)
+    else:
+        raise ResponseError('Not in favorites')
     await db.users.find_one_and_update(
         {'_id': user['_id']},
-        {'$set': {'{}_favorite_spells'.format(_class): user['{}_favorite_spells'.format(_class)]}},
+        {'$set': {'collections.favorites': favorites}},
     )
     return api_response(str_id)
 
@@ -115,10 +122,8 @@ async def get_favorites(request):
     app = request.app
     db = app['db']
     user = request.user
-    params = await request.post()
-    _class = params.get('class')
-    fav = await db['{}_spells'.format(_class)].find(
-        {'_id': {'$in': [bson.ObjectId(_id) for _id in user.get('{}_favorite_spells'.format(_class), [])]}}
+    fav = await db.spells.find(
+        {'_id': {'$in': [bson.ObjectId(_id) for _id in user['collections']['favorites']]}}
     ).to_list(None)
     for f in fav:
         f['_id'] = str(f['_id'])
