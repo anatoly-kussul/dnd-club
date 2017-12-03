@@ -1,6 +1,6 @@
 import hashlib
 import logging
-import sys
+import logging.config
 
 from aiohttp.web import json_response
 
@@ -19,14 +19,30 @@ def hash_pass(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 
-def setup_logging(verbose=True, silent=False):
-    fmt = '%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s'
-    if verbose:
-        logging_level = logging.DEBUG
-    elif silent:
-        logging_level = logging.CRITICAL
-    else:
-        logging_level = logging.INFO
-    logging.basicConfig(stream=sys.stdout, level=logging_level, format=fmt)
-    if not verbose:
-        logging.getLogger('aiohttp').setLevel(logging.WARNING)
+def setup_logging():
+    logging.config.dictConfig({
+        'version': 1,
+        'formatters': {
+            'colored': {
+                '()': 'colorlog.ColoredFormatter',
+                'format': '%(log_color)s%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s',
+            },
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'colored',
+                'stream': 'ext://sys.stdout',
+            },
+        },
+        'loggers': {
+            '': {
+                'level': 'DEBUG',
+                'propagate': True,
+                'handlers': ['console'],
+            },
+            # 'aiohttp': {
+            #     'level': 'WARNING',
+            # },
+        },
+    })
