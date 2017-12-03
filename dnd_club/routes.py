@@ -9,6 +9,9 @@ from dnd_club.handlers import (
     get_user_data,
     create_collection,
     delete_collection,
+    add_to_collection,
+    remove_from_collection,
+    get_collection,
 )
 
 routes = [
@@ -22,4 +25,7 @@ routes = [
     ('GET', '/get_user_data', get_user_data, 'get_user_data'),
     ('POST', '/create_collection', create_collection, 'create_collection'),
     ('POST', '/delete_collection', delete_collection, 'delete_collection'),
+    ('POST', '/add_to_collection', add_to_collection, 'add_to_collection'),
+    ('POST', '/remove_from_collection', remove_from_collection, 'remove_from_collection'),
+    ('GET', '/get_collection', get_collection, 'get_collection'),
 ]

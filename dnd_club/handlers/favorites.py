@@ -19,7 +19,7 @@ async def add_favorite(request):
         raise ResponseError('Already in favorites')
     await db.users.find_one_and_update(
         {'_id': user['_id']},
-        {'$set': {'collections.favorites': favorites}},
+        {'$set': {'favorites': favorites}},
     )
     return api_response(str_id)
 
@@ -39,7 +39,7 @@ async def remove_favorite(request):
         raise ResponseError('Not in favorites')
     await db.users.find_one_and_update(
         {'_id': user['_id']},
-        {'$set': {'collections.favorites': favorites}},
+        {'$set': {'favorites': favorites}},
     )
     return api_response(str_id)
 
