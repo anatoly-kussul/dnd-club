@@ -8,7 +8,7 @@ from dnd_club.helpers import login_required, api_response
 async def add_favorite(request):
     db = request.app['db']
     user = request.user
-    params = await request.post()
+    params = await request.json()
 
     str_id = params.get('id')
     _id = bson.ObjectId(str_id)
@@ -28,7 +28,7 @@ async def add_favorite(request):
 async def remove_favorite(request):
     db = request.app['db']
     user = request.user
-    params = await request.post()
+    params = await request.json()
 
     str_id = params.get('id')
     _id = bson.ObjectId(str_id)

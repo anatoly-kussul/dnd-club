@@ -8,7 +8,7 @@ from dnd_club.helpers import login_required, api_response
 async def create_collection(request):
     db = request.app['db']
     user = request.user
-    params = await request.post()
+    params = await request.json()
 
     collection_name = params.get('collection_name')
     if collection_name in user['collections']:
@@ -25,7 +25,7 @@ async def create_collection(request):
 async def delete_collection(request):
     db = request.app['db']
     user = request.user
-    params = await request.post()
+    params = await request.json()
 
     collection_name = params.get('collection_name')
     if collection_name not in user['collections']:
@@ -42,7 +42,7 @@ async def delete_collection(request):
 async def add_to_collection(request):
     db = request.app['db']
     user = request.user
-    params = await request.post()
+    params = await request.json()
 
     str_id = params.get('id')
     _id = bson.ObjectId(str_id)
@@ -66,7 +66,7 @@ async def add_to_collection(request):
 async def remove_from_collection(request):
     db = request.app['db']
     user = request.user
-    params = await request.post()
+    params = await request.json()
 
     str_id = params.get('id')
     _id = bson.ObjectId(str_id)

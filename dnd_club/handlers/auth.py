@@ -10,7 +10,7 @@ async def login(request):
     app = request.app
     db = app['db']
 
-    params = await request.post()
+    params = await request.json()
     email = params.get('email')
     password = params.get('password')
     user = await db.users.find_one({'email': email, 'password': hash_pass(password)})
@@ -36,7 +36,7 @@ async def logout(request):
 
 async def register(request):
     db = request.app['db']
-    params = await request.post()
+    params = await request.json()
 
     username = params.get('username')
     password = params.get('password')
@@ -75,7 +75,7 @@ async def get_user_data(request):
 async def change_password(request):
     db = request.app['db']
     user = request.user
-    params = await request.post()
+    params = await request.json()
 
     old_password = params.get('old_password')
     new_password = params.get('new_password')
