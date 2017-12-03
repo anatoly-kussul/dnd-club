@@ -1,8 +1,18 @@
 import hashlib
+import json
 import logging
 import logging.config
+from functools import partial
 
 from aiohttp.web import json_response, HTTPForbidden
+from bson import ObjectId
+
+
+class CustomEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
 
 
 def api_response(data=None, status=True, code=200):
@@ -12,6 +22,7 @@ def api_response(data=None, status=True, code=200):
             'data': data,
         },
         status=code,
+        dumps=partial(json.dumps, cls=CustomEncoder)
     )
 
 

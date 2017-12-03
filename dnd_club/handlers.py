@@ -15,10 +15,11 @@ async def hello_world(request):
 
 async def login(request):
     app = request.app
+    db = app['db']
+
     params = await request.post()
     username = params.get('username')
     password = params.get('password')
-    db = app['db']
     user = await db.users.find_one({'username': username, 'password': hash_pass(password)})
     if not user:
         raise ResponseError('Wrong username or password')
@@ -32,6 +33,7 @@ async def login(request):
 @login_required
 async def logout(request):
     app = request.app
+
     token = request.cookies.get('token')
     app['session_storage'].pop(token, None)
     response = api_response(True)
@@ -40,9 +42,9 @@ async def logout(request):
 
 
 async def register(request):
-    app = request.app
-    db = app['db']
+    db = request.app['db']
     params = await request.post()
+
     username = params.get('username')
     password = params.get('password')
     email = params.get('email')
@@ -67,24 +69,69 @@ async def register(request):
 
 
 async def get_class_spells(request):
-    app = request.app
-    db = app['db']
+    db = request.app['db']
     params = request.GET
+
     _class = params.get('class', '')
     spells = await db.spells.find({'lvl.{}'.format(_class): {'$exists': True}}).to_list(None)
-    for spell in spells:
-        spell['_id'] = str(spell['_id'])
     return api_response(spells)
 
 
 @login_required
-async def add_favorite(request):
-    app = request.app
-    db = app['db']
+async def create_collection(request):
+    db = request.app['db']
+    user = request.user
     params = await request.post()
+
+    collection_name = params.get('name')
+    if collection_name not in user['collections']:
+        user['collections'][collection_name] = []
+    else:
+        raise ResponseError('Duplicate collection name')
+    await db.users.find_one_and_update(
+        {'_id': user['_id']},
+        {'$set': {'collections.{}'.format(collection_name): user['collections'][collection_name]}}
+    )
+    return api_response(collection_name)
+
+
+@login_required
+async def delete_collection(request):
+    db = request.app['db']
+    user = request.user
+    params = await request.post()
+
+    collection_name = params.get('name')
+    if collection_name in user['collections']:
+        user['collections'].pop(collection_name)
+    else:
+        raise ResponseError('No such collection')
+    await db.users.find_one_and_update(
+        {'_id': user['_id']},
+        {'$unset': {'collections.{}'.format(collection_name): 1}}
+    )
+    return api_response(collection_name)
+
+
+@login_required
+async def get_user_data(request):
+    user = request.user
+    user_dict = {
+        'username': user['username'],
+        'email': user['email'],
+        'collections': list(user['collections'].keys()),
+    }
+    return api_response(user_dict)
+
+
+@login_required
+async def add_favorite(request):
+    db = request.app['db']
+    user = request.user
+    params = await request.post()
+
     str_id = params.get('id')
     _id = bson.ObjectId(str_id)
-    user = request.user
     favorites = user['collections']['favorites']
     if _id not in favorites:
         favorites.append(_id)
@@ -99,12 +146,12 @@ async def add_favorite(request):
 
 @login_required
 async def remove_favorite(request):
-    app = request.app
-    db = app['db']
+    db = request.app['db']
+    user = request.user
     params = await request.post()
+
     str_id = params.get('id')
     _id = bson.ObjectId(str_id)
-    user = request.user
     favorites = user['collections']['favorites']
     if _id in favorites:
         favorites.remove(_id)
@@ -119,12 +166,10 @@ async def remove_favorite(request):
 
 @login_required
 async def get_favorites(request):
-    app = request.app
-    db = app['db']
+    db = request.app['db']
     user = request.user
+
     fav = await db.spells.find(
         {'_id': {'$in': [bson.ObjectId(_id) for _id in user['collections']['favorites']]}}
     ).to_list(None)
-    for f in fav:
-        f['_id'] = str(f['_id'])
     return api_response(fav)
