@@ -3,10 +3,11 @@ import uuid
 import bson
 from pymongo.errors import DuplicateKeyError
 
-from dnd_club.helpers import hash_pass, api_response
+from dnd_club.helpers import hash_pass, api_response, login_required
 from dnd_club.errors import ResponseError
 
 
+@login_required
 async def hello_world(request):
     user = request.user
     return api_response('Hello {}!'.format(user['username']))
@@ -28,6 +29,7 @@ async def login(request):
     return response
 
 
+@login_required
 async def logout(request):
     app = request.app
     token = request.cookies.get('token')
@@ -72,6 +74,7 @@ async def get_class_spells(request):
     return api_response(spells)
 
 
+@login_required
 async def add_favorite(request):
     app = request.app
     db = app['db']
@@ -89,6 +92,7 @@ async def add_favorite(request):
     return api_response(str_id)
 
 
+@login_required
 async def remove_favorite(request):
     app = request.app
     db = app['db']
@@ -106,6 +110,7 @@ async def remove_favorite(request):
     return api_response(str_id)
 
 
+@login_required
 async def get_favorites(request):
     app = request.app
     db = app['db']

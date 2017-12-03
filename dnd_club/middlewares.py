@@ -45,22 +45,3 @@ async def suppress_exceptions(app, handler):
             return api_response('Internal server error', status=False, code=500)
 
     return middleware
-
-
-async def auth(app, handler):
-    async def middleware(request):
-        def login_required(path):
-            result = True
-            for r in ['/login', '/register']:
-                if path.startswith(r):
-                    result = False
-            return result
-
-        if login_required(request.path):
-            token = request.cookies.get('token')
-            if token not in app['session_storage']:
-                raise web.HTTPForbidden(reason='Not logged in')
-            request.user = app['session_storage'][token]
-        return await handler(request)
-
-    return middleware

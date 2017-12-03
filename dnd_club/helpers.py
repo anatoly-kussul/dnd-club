@@ -2,7 +2,7 @@ import hashlib
 import logging
 import logging.config
 
-from aiohttp.web import json_response
+from aiohttp.web import json_response, HTTPForbidden
 
 
 def api_response(data=None, status=True, code=200):
@@ -17,6 +17,17 @@ def api_response(data=None, status=True, code=200):
 
 def hash_pass(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+
+def login_required(handler):
+    async def wrapper(request):
+        app = request.app
+        token = request.cookies.get('token')
+        if token not in app['session_storage']:
+            raise HTTPForbidden(reason='Not logged in')
+        request.user = app['session_storage'][token]
+        return await handler(request)
+    return wrapper
 
 
 def setup_logging():
