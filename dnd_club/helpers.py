@@ -2,7 +2,7 @@ import hashlib
 import json
 import logging
 import logging.config
-from functools import partial
+from functools import partial, wraps
 
 from aiohttp.web import json_response, HTTPForbidden
 from bson import ObjectId
@@ -31,6 +31,7 @@ def hash_pass(password):
 
 
 def login_required(handler):
+    @wraps(handler)
     async def wrapper(request):
         app = request.app
         token = request.cookies.get('token')

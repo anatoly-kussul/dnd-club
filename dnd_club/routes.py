@@ -1,19 +1,4 @@
-from dnd_club.handlers import (
-    login,
-    register,
-    logout,
-    get_class_spells,
-    add_favorite,
-    get_favorites,
-    remove_favorite,
-    get_user_data,
-    create_collection,
-    delete_collection,
-    add_to_collection,
-    remove_from_collection,
-    get_collection,
-    change_password,
-)
+from dnd_club.handlers import *
 
 routes = [
     # auth

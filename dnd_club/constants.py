@@ -1,0 +1,3 @@
+EMAIL_REGEX = '.*@.*'
+PASSWORD_REGEX = '^.{6,60}$'
+USERNAME_REGEX = '[a-zA-Z0-9\s_]{2,32}'

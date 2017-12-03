@@ -4,15 +4,18 @@ from pymongo.errors import DuplicateKeyError
 
 from dnd_club.errors import ResponseError
 from dnd_club.helpers import hash_pass, api_response, login_required
+from dnd_club.json_schemas.auth import login_schema, register_schema, change_pass_schema
+from dnd_club.json_schemas.helpers import handler_schema
 
 
+@handler_schema(login_schema)
 async def login(request):
     app = request.app
     db = app['db']
 
     params = await request.json()
-    email = params.get('email')
-    password = params.get('password')
+    email = params['email']
+    password = params['password']
     user = await db.users.find_one({'email': email, 'password': hash_pass(password)})
     if not user:
         raise ResponseError('Wrong username or password')
@@ -34,13 +37,14 @@ async def logout(request):
     return response
 
 
+@handler_schema(register_schema)
 async def register(request):
     db = request.app['db']
     params = await request.json()
 
-    username = params.get('username')
-    password = params.get('password')
-    email = params.get('email')
+    username = params['username']
+    password = params['password']
+    email = params['email']
     user = {
         'username': username,
         'password': hash_pass(password),
@@ -72,13 +76,14 @@ async def get_user_data(request):
 
 
 @login_required
+@handler_schema(change_pass_schema)
 async def change_password(request):
     db = request.app['db']
     user = request.user
     params = await request.json()
 
-    old_password = params.get('old_password')
-    new_password = params.get('new_password')
+    old_password = params['old_password']
+    new_password = params['new_password']
 
     if hash_pass(old_password) != user['password']:
         raise ResponseError('Wrong password')
