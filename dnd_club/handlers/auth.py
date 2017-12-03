@@ -4,7 +4,7 @@ from pymongo.errors import DuplicateKeyError
 
 from dnd_club.errors import ResponseError
 from dnd_club.helpers import hash_pass, api_response, login_required
-from dnd_club.json_schemas.auth import login_schema, register_schema, change_pass_schema
+from dnd_club.json_schemas.handlers.auth import login_schema, register_schema, change_pass_schema
 from dnd_club.json_schemas.helpers import handler_schema
 
 

@@ -1,3 +1,4 @@
+import json
 import logging
 from functools import wraps
 
@@ -15,7 +16,10 @@ def handler_schema(schema):
     def wrapper(handler):
         @wraps(handler)
         async def wrapped(request):
-            params = await request.json()
+            try:
+                params = await request.json()
+            except json.JSONDecodeError as e:
+                return api_response('Invalid json: {}'.format(e), status=False)
             err_list = check_schema(params, schema, name=handler.__name__)
             if err_list:
                 return api_response(err_list, status=False)

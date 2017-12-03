@@ -2,9 +2,12 @@ import bson
 
 from dnd_club.errors import ResponseError
 from dnd_club.helpers import login_required, api_response
+from dnd_club.json_schemas.handlers.favorites import add_favorite_schema, remove_favorite_schema
+from dnd_club.json_schemas.helpers import handler_schema
 
 
 @login_required
+@handler_schema(add_favorite_schema)
 async def add_favorite(request):
     db = request.app['db']
     user = request.user
@@ -25,6 +28,7 @@ async def add_favorite(request):
 
 
 @login_required
+@handler_schema(remove_favorite_schema)
 async def remove_favorite(request):
     db = request.app['db']
     user = request.user

@@ -2,9 +2,17 @@ import bson
 
 from dnd_club.errors import ResponseError
 from dnd_club.helpers import login_required, api_response
+from dnd_club.json_schemas.handlers.collections import (
+    create_collection_schema,
+    delete_collection_schema,
+    add_to_collection_schema,
+    remove_from_collection_schema,
+)
+from dnd_club.json_schemas.helpers import handler_schema
 
 
 @login_required
+@handler_schema(create_collection_schema)
 async def create_collection(request):
     db = request.app['db']
     user = request.user
@@ -22,6 +30,7 @@ async def create_collection(request):
 
 
 @login_required
+@handler_schema(delete_collection_schema)
 async def delete_collection(request):
     db = request.app['db']
     user = request.user
@@ -39,6 +48,7 @@ async def delete_collection(request):
 
 
 @login_required
+@handler_schema(add_to_collection_schema)
 async def add_to_collection(request):
     db = request.app['db']
     user = request.user
@@ -63,6 +73,7 @@ async def add_to_collection(request):
 
 
 @login_required
+@handler_schema(remove_from_collection_schema)
 async def remove_from_collection(request):
     db = request.app['db']
     user = request.user
