@@ -49,8 +49,8 @@ async def init_db():
 def init_app(loop=None):
     app = web.Application(
         middlewares=[
-            suppress_exceptions,
             cors_factory,
+            suppress_exceptions,
         ],
         loop=loop
     )
