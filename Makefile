@@ -4,6 +4,12 @@ build:
 run:
 	docker-compose -f docker/docker-compose.yml up
 
+run_prod:
+	docker-compose -f docker/docker-compose.yml up -d
+
+logs:
+	docker-compose -f docker/docker-compose.yml logs -f
+
 stop:
 	docker-compose -f docker/docker-compose.yml stop
 
