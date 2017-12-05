@@ -10,6 +10,9 @@ string_schema = {'type': 'string'}
 float_schema = {'type': 'number'}
 int_schema = {'type': 'integer'}
 bool_schema = {'type': 'boolean'}
+positive_int_schema = {'type': 'integer', 'minimum': 0}
+list_of_strings_schema = {'type': 'array', 'items': string_schema}
+list_of_positive_int_schema = {'type': 'array', 'items': positive_int_schema}
 
 
 def handler_schema(schema):

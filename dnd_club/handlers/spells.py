@@ -1,10 +1,14 @@
+from dnd_club.handlers.helpers import get_filtered_spells
 from dnd_club.helpers import api_response
+from dnd_club.json_schemas.handlers.spells import get_spells_schema
+from dnd_club.json_schemas.helpers import handler_schema
 
 
-async def get_class_spells(request):
+@handler_schema(get_spells_schema)
+async def get_spells(request):
     db = request.app['db']
-    params = request.GET
+    params = await request.json()
 
-    _class = params.get('class', '')
-    spells = await db.spells.find({'lvl.{}'.format(_class): {'$exists': True}}).to_list(None)
-    return api_response(spells)
+    result = await get_filtered_spells(db.spells, params)
+
+    return api_response(result)

@@ -9,7 +9,7 @@ routes = [
     ('GET', '/get_user_data', get_user_data, 'get_user_data'),
 
     # spells
-    ('GET', '/spells', get_class_spells, 'get_class_spells'),
+    ('POST', '/spells', get_spells, 'get_class_spells'),
 
     # favorites
     ('POST', '/add_fav', add_favorite, 'add_fav'),
