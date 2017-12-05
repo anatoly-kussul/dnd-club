@@ -13,7 +13,7 @@ routes = [
 
     # favorites
     ('POST', '/add_fav', add_favorite, 'add_fav'),
-    ('GET', '/get_fav', get_favorites, 'get_fav'),
+    ('POST', '/get_fav', get_favorites, 'get_fav'),
     ('POST', '/rem_fav', remove_favorite, 'rem_fav'),
 
     # collections

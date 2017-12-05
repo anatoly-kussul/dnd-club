@@ -1,8 +1,9 @@
 import bson
 
 from dnd_club.errors import ResponseError
+from dnd_club.handlers.helpers import get_filtered_spells
 from dnd_club.helpers import login_required, api_response
-from dnd_club.json_schemas.handlers.favorites import add_favorite_schema, remove_favorite_schema
+from dnd_club.json_schemas.handlers.favorites import add_favorite_schema, remove_favorite_schema, get_favorites_schema
 from dnd_club.json_schemas.helpers import handler_schema
 
 
@@ -49,11 +50,12 @@ async def remove_favorite(request):
 
 
 @login_required
+@handler_schema(get_favorites_schema)
 async def get_favorites(request):
     db = request.app['db']
     user = request.user
+    params = await request.json()
 
-    fav = await db.spells.find(
-        {'_id': {'$in': user['favorites']}}
-    ).to_list(None)
-    return api_response(fav)
+    result = await get_filtered_spells(db.spells, params, {'_id': {'$in': user['favorites']}})
+
+    return api_response(result)

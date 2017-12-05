@@ -9,7 +9,7 @@ get_spells_schema = {
     'type': 'object',
     'properties': {
         'class': string_schema,
-        'name': list_of_strings_schema,
+        'name': string_schema,
         'school': list_of_strings_schema,
         'source': list_of_strings_schema,
         'level': list_of_positive_int_schema,
