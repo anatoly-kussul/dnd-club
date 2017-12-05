@@ -21,5 +21,5 @@ routes = [
     ('POST', '/delete_collection', delete_collection, 'delete_collection'),
     ('POST', '/add_to_collection', add_to_collection, 'add_to_collection'),
     ('POST', '/remove_from_collection', remove_from_collection, 'remove_from_collection'),
-    ('GET', '/get_collection', get_collection, 'get_collection'),
+    ('POST', '/get_collection', get_collection, 'get_collection'),
 ]

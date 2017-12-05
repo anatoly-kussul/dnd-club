@@ -1,12 +1,14 @@
 import bson
 
 from dnd_club.errors import ResponseError
+from dnd_club.handlers.helpers import get_filtered_spells
 from dnd_club.helpers import login_required, api_response
 from dnd_club.json_schemas.handlers.collections import (
     create_collection_schema,
     delete_collection_schema,
     add_to_collection_schema,
     remove_from_collection_schema,
+    get_collection_schema,
 )
 from dnd_club.json_schemas.helpers import handler_schema
 
@@ -98,15 +100,16 @@ async def remove_from_collection(request):
 
 
 @login_required
+@handler_schema(get_collection_schema)
 async def get_collection(request):
     db = request.app['db']
     user = request.user
-    params = request.GET
+    params = await request.json()
 
     collection_name = params.get('collection_name')
     if collection_name not in user['collections']:
         raise ResponseError('No such collection')
-    spells = await db.spells.find(
-        {'_id': {'$in': user['collections'][collection_name]}}
-    ).to_list(None)
-    return api_response(spells)
+
+    result = await get_filtered_spells(db.spells, params, {'_id': {'$in': user['collections'][collection_name]}})
+
+    return api_response(result)

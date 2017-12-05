@@ -24,7 +24,6 @@ remove_favorite_schema = {
 get_favorites_schema = {
     'type': 'object',
     'properties': {
-        # 'collection_name': string_schema,
         'class': string_schema,
         'name': string_schema,
         'school': list_of_strings_schema,
