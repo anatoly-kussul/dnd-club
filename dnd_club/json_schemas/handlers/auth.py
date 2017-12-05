@@ -1,4 +1,5 @@
 from dnd_club import constants
+from dnd_club.json_schemas.helpers import string_schema
 
 email_schema = {
     'type': 'string',
@@ -18,7 +19,7 @@ login_schema = {
     'type': 'object',
     'properties': {
         'email': email_schema,
-        'password': password_schema,
+        'password': string_schema,
     },
     'required': ['email', 'password'],
     'additionalProperties': False,

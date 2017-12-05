@@ -28,6 +28,7 @@ async def init_db():
     #         for spell in data:
     #             spell['description'] = eval(spell['description']).decode().strip()
     #             spell['lvl'] = {_class: int(spell['lvl'])}
+    #             spell['school'] = list(spell['school'].split('/'))
     #             saved_spell = spells.setdefault(spell['name'], spell)
     #             saved_spell['lvl'].update(spell['lvl'])
     # await db.spells.insert_many(spells.values())

@@ -10,6 +10,7 @@ routes = [
 
     # spells
     ('POST', '/spells', get_spells, 'get_class_spells'),
+    ('GET', '/filters', get_filters, 'get_filters'),
 
     # favorites
     ('POST', '/add_fav', add_favorite, 'add_fav'),

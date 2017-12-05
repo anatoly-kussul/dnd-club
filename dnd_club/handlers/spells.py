@@ -12,3 +12,12 @@ async def get_spells(request):
     result = await get_filtered_spells(db.spells, params)
 
     return api_response(result)
+
+
+async def get_filters(request):
+    db = request.app['db']
+    result = {
+        'school': await db.spells.distinct('school'),
+        'source': await db.spells.distinct('source'),
+    }
+    return api_response(result)

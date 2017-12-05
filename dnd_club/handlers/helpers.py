@@ -5,15 +5,16 @@ def filter_spells(spells_collection, params, additional_filter=None):
     filter_params = {}
     if additional_filter is not None:
         filter_params = additional_filter
-    if 'level' in params:
+    if params.get('level'):
         filter_params['lvl.{}'.format(params['class'])] = {'$in': params['level']}
     else:
         filter_params['lvl.{}'.format(params['class'])] = {'$exists': True}
-    if 'name' in params:
+    if params.get('name'):
         filter_params['name'] = {'$regex': '.*{}.*'.format(params['name']), '$options': 'i'}
-    for param in ['school', 'source']:
-        if params.get(param):
-            filter_params[param] = {'$in': params[param]}
+    if params.get('source'):
+        filter_params['source'] = {'$in': params['source']}
+    if params.get('school'):
+        filter_params['school'] = {'$elemMatch': {'$in': params['school']}}
     spells_query = spells_collection.find(filter_params)
 
     return spells_query
